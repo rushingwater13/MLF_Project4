@@ -1,4 +1,4 @@
-
+import matplotlib.pyplot as plt
 
 value_function = [
         [0, 0, 0, 0, 0],
@@ -14,6 +14,8 @@ def calculate_function(mode):
 
     global value_function
 
+    mode = mode.lower()
+
     for i in range(10):
 
         new_function = [[0] * 5 for _ in range(5)]
@@ -25,11 +27,13 @@ def calculate_function(mode):
                 diff[j][k] = new_function[j][k] - value_function[j][k]
 
 
-        print(f"Iteration {i+1}:")
-        print_grid(new_function)
+        #print(f"Iteration {i+1}:")
+        #print_grid(new_function)
+        plot_grid(new_function, f"{mode} Iteration {i+1}", mode, f"{mode}_{i}")
 
-        print(f"Difference (new - old):")
-        print_grid(diff)
+        #print(f"Difference (new - old):")
+        #print_grid(diff)
+        plot_grid(diff, f"{mode} Difference (new-old) {i+1}", mode, f"{mode}_{i}_diff")
 
         
         value_function = new_function
@@ -43,7 +47,6 @@ def get_update(j, k, mode):
     #("up", "down", "left", "right")
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
-    mode = mode.lower()
 
     if mode == "b6":
         B_reward = 6
@@ -115,6 +118,25 @@ def reset_function():
     return [[0] * 5 for _ in range(5)]
 
 
+def plot_grid(grid, title, folder, file):
+
+    plt.figure()
+    plt.imshow(grid)
+    plt.colorbar()
+
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
+            plt.text(j, i, f"{grid[i][j]:.2f}", 
+                     ha="center", va="center", color="black")
+            
+    plt.title(title)
+    plt.xticks([])
+    plt.yticks([])
+    plt.savefig(f"{folder}/{file}.png")
+    plt.close()
+
+
+
 def main():
 
     global value_function
@@ -128,9 +150,10 @@ def main():
         print(f"-------- {policy} --------")
         results[policy] = calculate_function(policy)
 
-    print("Final Difference (Optimal - Uniform)")
+    #print("Final Difference (Optimal - Uniform)")
     sub = sub_grid(results["Optimal"], results["Uniform"])
-    print_grid(sub)
+    #print_grid(sub)
+    plot_grid(sub, "Final Difference (Optimal - Uniform)", "uniform", "uni_opt_diff")
 
 
 if __name__ == "__main__":
