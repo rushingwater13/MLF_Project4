@@ -17,8 +17,10 @@ def uniform():
     for i in range(10):
 
         new_function = []
+        diff = []
         for _ in range(5):
             new_function.append([0] * 5)
+            diff.append([0] * 5)
 
         for j in range(5):
             for k in range(5):
@@ -26,10 +28,13 @@ def uniform():
                 #print(f"j: {j}, k: {k}")
 
                 new_function[j][k] = get_update(j, k)
+                diff[j][k] = new_function[j][k] - value_function[j][k]
 
         print(f"Iteration {i+1}:")
         print_grid(new_function)
-        #print(f"Difference : {value_function - new_function}")
+
+        print(f"Difference:")
+        print_grid(diff)
 
         
         value_function = new_function
