@@ -21,9 +21,9 @@ def calculate_function(mode):
 
         for j in range(5):
             for k in range(5):
-
                 new_function[j][k] = get_update(j, k, mode)
                 diff[j][k] = new_function[j][k] - value_function[j][k]
+
 
         print(f"Iteration {i+1}:")
         print_grid(new_function)
@@ -33,6 +33,8 @@ def calculate_function(mode):
 
         
         value_function = new_function
+
+    return value_function
         
 
 
@@ -41,10 +43,11 @@ def get_update(j, k, mode):
     #("up", "down", "left", "right")
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
+    mode = mode.lower()
 
-    if mode == "B6":
+    if mode == "b6":
         B_reward = 6
-    elif mode == "B7":
+    elif mode == "b7":
         B_reward = 7
     else:
         B_reward = 5
@@ -76,14 +79,28 @@ def get_update(j, k, mode):
             reward = 0
 
         candidate = (gamma * value_function[nj][nk]) + reward
-        value += candidate
-        best_value = max(best_value, candidate)
+        
+        if mode == "uniform":
+            value += candidate
+        else:
+            best_value = max(best_value, candidate)
 
 
-    if mode == "Uniform":
+    if mode == "uniform":
         return value / 4
     else:
         return best_value
+    
+
+def sub_grid(grid1, grid2):
+    diff = [[0] * 5 for _ in range(5)]
+
+    for j in range(5):
+        for k in range(5):
+            diff[j][k] = grid1[j][k] - grid2[j][k]
+
+    return diff
+
 
 
 def print_grid(grid):
@@ -104,10 +121,17 @@ def main():
 
     policies = ["Uniform", "Optimal", "B6", "B7"]
 
+    results = {}
+
     for policy in policies:
         value_function = reset_function()
         print(f"-------- {policy} --------")
-        calculate_function(policy)
+        results[policy] = calculate_function(policy)
+
+    print("Final Difference (Optimal - Uniform)")
+    sub = sub_grid(results["Optimal"], results["Uniform"])
+    print_grid(sub)
+
 
 if __name__ == "__main__":
     main()
